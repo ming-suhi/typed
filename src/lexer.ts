@@ -67,21 +67,21 @@ export class Lexer {
 
 export class FragmentLexer {
     content: string;
-    offset: number = 0;
+    private offset: number = 0;
 
     constructor(content: string) {
         this.content = content;
     }
 
     get currentCharacter(): string | null {
-        if (!(this.offset >= 0 && this.offset < this.content.length))
+        if (this.offset >= this.content.length)
             return null;
 
         return this.content[this.offset];
     }
 
     peakPrevious(count: number = 1): string | null {
-        if (this.offset - count < 0)
+        if (count > this.offset)
             return null;
         
         this.offset -= count;
@@ -103,15 +103,16 @@ export class FragmentLexer {
     }
 
     rewindCharacter() {
-        if (!(this.offset > 0))
-            throw new Error("Do not rewind below zero!");
+        if (this.offset == 0)
+            throw new Error("Cannot rewind below zero!");
 
         this.offset--;
     }
 
     rewindCharacters(count: number) {
         if (count > this.offset)
-            throw new Error("Do not rewind below zero!");
+            throw new Error("Cannot rewind below zero!");
+
         this.offset -= count;
     }
 }
